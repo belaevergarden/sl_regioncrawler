@@ -8,9 +8,37 @@ import argparse
 import sys
 import logging
 import os
+import yaml
+from pathlib import Path
 from .models import SearchCriteria
 from .crawler import RegionCrawler
 from . import __version__
+
+
+def load_config(config_path: str) -> dict:
+    """
+    Load configuration from YAML file.
+    
+    Args:
+        config_path: Path to YAML config file
+        
+    Returns:
+        Configuration dictionary
+        
+    Raises:
+        FileNotFoundError: If config file doesn't exist
+        yaml.YAMLError: If config file is invalid
+    """
+    path = Path(config_path)
+    if not path.exists():
+        raise FileNotFoundError(f"Config file not found: {config_path}")
+    
+    with open(path, 'r') as f:
+        try:
+            config = yaml.safe_load(f)
+            return config or {}
+        except yaml.YAMLError as e:
+            raise ValueError(f"Invalid YAML in config file: {e}")
 
 
 def setup_logging(verbose: bool = False):
@@ -46,6 +74,12 @@ def create_parser() -> argparse.ArgumentParser:
         '--version',
         action='version',
         version=f'sl_regioncrawler {__version__}'
+    )
+    
+    parser.add_argument(
+        '--config',
+        type=str,
+        help='Path to YAML configuration file'
     )
     
     # Search area
@@ -185,26 +219,59 @@ def main(argv=None):
     parser = create_parser()
     args = parser.parse_args(argv)
     
+    # Load config file if provided
+    config = {}
+    if args.config:
+        try:
+            config = load_config(args.config)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"Error loading config: {e}", file=sys.stderr)
+            return 1
+    
     # Setup logging
-    setup_logging(args.verbose)
+    verbose = args.verbose or config.get('logging', {}).get('verbose', False)
+    setup_logging(verbose)
     logger = logging.getLogger(__name__)
     
+    # Log config file if loaded
+    if args.config:
+        logger.info(f"Loaded configuration from: {args.config}")
+    
     try:
-        # Create output directory
-        os.makedirs(args.output, exist_ok=True)
+        # Get config sections
+        search_config = config.get('search', {})
+        discovery_config = config.get('discovery', {})
+        output_config = config.get('output', {})
+        database_config = config.get('database', {})
         
-        # Build search criteria
+        # Create output directory
+        output_dir = args.output if args.output != 'output' else output_config.get('directory', 'output')
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Build search criteria (command-line args override config file)
+        maturity_config = search_config.get('maturity', {})
+        
         criteria = SearchCriteria(
-            public_only=args.public_only and not args.include_private,
-            include_general=args.general,
-            include_moderate=args.moderate,
-            include_adult=args.adult,
-            min_x=args.min_x,
-            max_x=args.max_x,
-            min_y=args.min_y,
-            max_y=args.max_y,
-            require_sandbox=args.sandbox_only,
-            require_scripts=args.scripts_only
+            public_only=(args.public_only and not args.include_private) 
+                       if not args.include_private 
+                       else search_config.get('public_only', True),
+            include_general=args.general if args.general 
+                          else maturity_config.get('general', True),
+            include_moderate=args.moderate if args.moderate 
+                           else maturity_config.get('moderate', True),
+            include_adult=args.adult if args.adult 
+                        else maturity_config.get('adult', False),
+            min_x=args.min_x if args.min_x != 950 
+                 else discovery_config.get('min_x', 950),
+            max_x=args.max_x if args.max_x != 1050 
+                 else discovery_config.get('max_x', 1050),
+            min_y=args.min_y if args.min_y != 950 
+                 else discovery_config.get('min_y', 950),
+            max_y=args.max_y if args.max_y != 1050 
+                 else discovery_config.get('max_y', 1050),
+            require_sandbox=args.sandbox_only or search_config.get('require_sandbox', False),
+            require_scripts=args.scripts_only or search_config.get('require_scripts', False),
+            exclude_patterns=search_config.get('exclude_patterns', [])
         )
         
         logger.info("Search Criteria:")
@@ -216,28 +283,38 @@ def main(argv=None):
         logger.info(f"  Scripts only: {criteria.require_scripts}")
         
         # Create crawler
+        database_path = args.database if args.database != 'regions.db' \
+                       else database_config.get('path', 'regions.db')
+        
         crawler = RegionCrawler(
             criteria=criteria,
-            database_path=args.database,
-            output_dir=args.output
+            database_path=database_path,
+            output_dir=output_dir
         )
+        
+        # Get crawl parameters
+        step = args.step if args.step != 10 \
+              else discovery_config.get('step', 10)
+        report_limit = args.report_limit if args.report_limit != 100 \
+                      else output_config.get('top_regions', 100)
+        save_to_db = (not args.no_save) and database_config.get('save_results', True)
         
         # Run crawl
         regions = crawler.run(
-            step=args.step,
+            step=step,
             limit=args.limit,
-            save_to_db=not args.no_save,
+            save_to_db=save_to_db,
             generate_reports=not args.no_reports,
-            report_limit=args.report_limit
+            report_limit=report_limit
         )
         
         logger.info(f"Crawl complete: {len(regions)} regions")
         
         if not args.no_reports:
-            logger.info(f"Reports saved to: {args.output}/")
+            logger.info(f"Reports saved to: {output_dir}/")
         
-        if not args.no_save:
-            logger.info(f"Database: {args.database}")
+        if save_to_db:
+            logger.info(f"Database: {database_path}")
         
         return 0
         
