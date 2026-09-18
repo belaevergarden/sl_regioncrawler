@@ -1,0 +1,9 @@
+Name,X,Y,Access,Public,Sandbox,Scripts,Agents,Water Height,Flags
+Private Estate 2,1005,985,General,Yes,No,Yes,19,20,0x04020000
+Private Estate 3,1011,991,Moderate,Yes,Yes,No,16,20,0x00022100
+Test Region 3,993,998,General,Yes,No,No,19,20,0x04022000
+Members Only 4,982,994,General,Yes,Yes,Yes,3,20,0x00020100
+Experimental Area 4,1000,982,General,Yes,No,Yes,6,20,0x00020000
+Mature Content Area 2,999,1002,Moderate,Yes,No,Yes,6,20,0x00020000
+Welcome Area 4,986,1006,General,Yes,No,Yes,4,20,0x00020000
+Maker's District 1,1003,1011,General,Yes,No,No,6,20,0x00022000

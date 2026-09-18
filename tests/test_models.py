@@ -6,7 +6,7 @@ Author: Isabela Evergarden
 
 import pytest
 from uuid import UUID
-from sl_regioncrawler.models import (
+from src.models import (
     Region, AccessLevel, RegionFlags,
     SearchCriteria, CrawlStatistics
 )

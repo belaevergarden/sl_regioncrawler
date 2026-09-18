@@ -7,8 +7,8 @@ Author: Isabela Evergarden
 import pytest
 import os
 import tempfile
-from sl_regioncrawler.models import Region, AccessLevel, RegionFlags
-from sl_regioncrawler.persistence import RegionDatabase
+from src.models import Region, AccessLevel, RegionFlags
+from src.persistence import RegionDatabase
 
 
 @pytest.fixture

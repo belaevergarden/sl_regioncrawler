@@ -114,7 +114,7 @@ pip install -r requirements.txt
 Run the crawler with default configuration:
 
 ```bash
-python -m sl_regioncrawler
+python -m src
 ```
 
 ### Custom Configuration
@@ -122,13 +122,13 @@ python -m sl_regioncrawler
 Run with a specific configuration file:
 
 ```bash
-python -m sl_regioncrawler --config my_config.yaml
+python -m src --config my_config.yaml
 ```
 
 ### Command-Line Options
 
 ```bash
-python -m sl_regioncrawler --help
+python -m src --help
 ```
 
 Available options:
@@ -142,13 +142,13 @@ Available options:
 
 ```bash
 # Discover first 100 regions
-python -m sl_regioncrawler --limit 100
+python -m src --limit 100
 
 # Use custom configuration
-python -m sl_regioncrawler --config configs/public_only.yaml
+python -m src --config configs/public_only.yaml
 
 # Enable verbose logging
-python -m sl_regioncrawler --verbose
+python -m src --verbose
 ```
 
 ---
@@ -323,10 +323,10 @@ sl_regioncrawler/
 ├── README.md                    # This file
 ├── LICENSE                      # Project license
 ├── requirements.txt             # Python dependencies
-├── config.yaml                  # Default configuration
+├── config.yaml.example          # Configuration template
 ├── .gitignore                   # Git exclusions
 │
-├── sl_regioncrawler/            # Main package
+├── src/                         # Source code
 │   ├── __init__.py              # Package initialization
 │   ├── __main__.py              # CLI entry point
 │   ├── models.py                # Data models
@@ -334,20 +334,19 @@ sl_regioncrawler/
 │   ├── crawler.py               # Main crawler logic
 │   ├── filtering.py             # Region filtering
 │   ├── persistence.py           # SQLite database interface
-│   ├── reports.py               # Report generation
-│   └── config.py                # Configuration management
+│   └── reports.py               # Report generation
 │
 ├── tests/                       # Test suite
 │   ├── __init__.py
-│   ├── test_protocol.py
 │   ├── test_models.py
 │   ├── test_filtering.py
-│   ├── test_persistence.py
-│   ├── test_cli.py
-│   └── fixtures/
+│   └── test_persistence.py
+│
+├── docs/                        # Documentation
+│   └── PROTOCOL.md              # Protocol specification
 │
 ├── output/                      # Generated reports (not committed)
-│   └── example_top_100_regions.md
+│   └── example_top_25_regions.md
 │
 └── reports/                     # Test reports (not committed)
     └── pytest-results.xml

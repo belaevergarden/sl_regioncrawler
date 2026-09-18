@@ -5,8 +5,8 @@ Author: Isabela Evergarden
 """
 
 import pytest
-from sl_regioncrawler.models import Region, AccessLevel, RegionFlags, SearchCriteria
-from sl_regioncrawler.filtering import (
+from src.models import Region, AccessLevel, RegionFlags, SearchCriteria
+from src.filtering import (
     RegionFilter, deduplicate_regions, filter_by_predicate,
     get_public_sandboxes, get_script_enabled_regions, get_active_regions
 )
