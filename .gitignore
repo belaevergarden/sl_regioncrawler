@@ -1,0 +1,87 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.virtualenv/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Type checking / linters
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.dmypy.json
+dmypy.json
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Credentials and secrets
+*.pem
+*.key
+credentials.*
+secrets.*
+
+# Second Life credentials/session data
+sl_credentials.*
+sl_session.*
+
+# AI agent state and control files
+.agents/
+.ai/
+.ai-context/
+.ai-data/
+.agent/
+agent-data/
+.cursor/
+.claude/
+.copilot/
+.windsurf/
+
+# Generated output (exclude unless explicitly needed)
+output/*.json
+output/*.db
+output/*.sqlite
+reports/*.xml
+reports/*.json
+crawl-cache/
+
+# Keep example outputs
+!output/example_*.md
+!output/example_*.txt
