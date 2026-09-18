@@ -1,0 +1,55 @@
+# Second Life Region Crawler Configuration Example
+# Author: Isabela Evergarden
+#
+# Copy this file to config.yaml and customize as needed
+
+# Search criteria
+search:
+  # Access filters
+  public_only: true           # Only discover public-access regions
+  
+  # Maturity rating filters
+  maturity:
+    general: true             # Include General-rated regions (PG)
+    moderate: true            # Include Moderate-rated regions (Mature)
+    adult: false              # Exclude Adult-rated regions
+  
+  # Region name filters (regex patterns)
+  exclude_patterns:
+    - "^Private"              # Exclude regions starting with "Private"
+    - "Staff Only"            # Exclude regions containing "Staff Only"
+    - "Admin"                 # Exclude admin regions
+  
+  # Special requirements
+  require_sandbox: false      # Only include sandbox regions
+  require_scripts: false      # Only include regions that allow scripts
+
+# Discovery settings
+discovery:
+  # Grid coordinates (main grid active area is typically 900-1200)
+  min_x: 950
+  max_x: 1050
+  min_y: 950
+  max_y: 1050
+  
+  # Request settings
+  step: 10                    # Coordinate step size for each request
+  timeout: 30                 # Request timeout in seconds
+  max_retries: 3              # Maximum connection retries
+
+# Output settings
+output:
+  format: "markdown"          # Report format: markdown, json, csv, or all
+  top_regions: 100            # Number of top regions to include in report
+  include_coordinates: true   # Include grid coordinates in reports
+  include_metadata: true      # Include full region metadata
+
+# Database settings
+database:
+  path: "regions.db"          # SQLite database path
+  save_results: true          # Save discovered regions to database
+
+# Logging
+logging:
+  level: "INFO"               # Log level: DEBUG, INFO, WARNING, ERROR
+  verbose: false              # Enable verbose output
