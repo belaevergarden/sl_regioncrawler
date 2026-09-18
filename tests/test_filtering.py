@@ -110,11 +110,12 @@ class TestRegionFilter:
     
     def test_get_top_regions(self):
         """Test getting top N regions."""
-        criteria = SearchCriteria()
+        criteria = SearchCriteria(min_x=900, max_x=1200, min_y=900, max_y=1200)
         filter_obj = RegionFilter(criteria)
         
+        # Create regions within the coordinate bounds
         regions = [
-            Region(x=i, y=1000, name=f"Region{i}", access=AccessLevel.GENERAL,
+            Region(x=1000+i, y=1000, name=f"Region{i}", access=AccessLevel.GENERAL,
                   region_flags=RegionFlags.PUBLIC_ALLOWED)
             for i in range(150)
         ]

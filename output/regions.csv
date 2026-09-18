@@ -1,0 +1,22 @@
+Name,X,Y,Access,Public,Sandbox,Scripts,Agents,Water Height,Flags
+Private Estate 5,1026,1007,Moderate,Yes,Yes,Yes,19,20,0x00020100
+Community Center 2,978,1008,General,Yes,No,Yes,20,20,0x00020000
+Innovation Hub 3,1006,1012,General,Yes,No,Yes,19,20,0x00020000
+Public Plaza 4,981,1008,Moderate,Yes,No,Yes,18,20,0x00020000
+Welcome Area 4,1018,997,General,Yes,No,Yes,17,20,0x04020000
+Test Region 2,999,984,General,Yes,No,Yes,15,20,0x04020000
+Development Zone 3,1011,981,General,Yes,Yes,Yes,10,20,0x04020100
+Public Plaza 3,1028,997,Moderate,Yes,No,Yes,14,20,0x04020000
+Test Region 1,979,1019,General,Yes,Yes,No,8,20,0x04022100
+Prototype Lab 1,990,976,Moderate,Yes,No,No,14,20,0x04022000
+Innovation Hub 1,1020,1018,Moderate,Yes,No,No,13,20,0x04022000
+Prototype Lab 1,989,971,Moderate,Yes,Yes,Yes,4,20,0x04020100
+Experimental Area 2,1021,978,General,Yes,Yes,Yes,3,20,0x04020100
+Restricted Zone 2,1005,1021,General,Yes,Yes,No,5,20,0x00022100
+Innovation Hub 3,994,971,General,Yes,No,Yes,6,20,0x04020000
+Prototype Lab 1,990,1030,General,Yes,Yes,Yes,1,20,0x00020100
+Public Plaza 4,1009,985,Moderate,Yes,No,Yes,5,20,0x04020000
+Maker's District 1,994,999,General,Yes,No,Yes,4,20,0x04020000
+Members Only 2,1010,1002,General,Yes,No,Yes,2,20,0x04020000
+Welcome Area 2,1027,1017,General,Yes,No,Yes,2,20,0x00020000
+Test Region 1,1018,980,Moderate,Yes,No,Yes,1,20,0x04020000

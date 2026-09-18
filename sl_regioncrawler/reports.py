@@ -6,7 +6,7 @@ Author: Isabela Evergarden
 
 import json
 from typing import List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from .models import Region, CrawlStatistics
 import logging
 
@@ -66,7 +66,7 @@ class ReportGenerator:
         lines = []
         lines.append("# Second Life Region Crawler - Top Regions Report\n")
         lines.append(f"**Author:** Isabela Evergarden\n")
-        lines.append(f"**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n")
+        lines.append(f"**Generated:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}\n")
         lines.append("---\n")
         
         # Statistics
@@ -147,7 +147,7 @@ class ReportGenerator:
         filepath = os.path.join(self.output_dir, filename)
         
         report_data = {
-            'generated_at': datetime.utcnow().isoformat(),
+            'generated_at': datetime.now(timezone.utc).isoformat(),
             'author': 'Isabela Evergarden',
             'statistics': statistics.to_dict(),
             'regions': [r.to_dict() for r in regions]
@@ -226,7 +226,7 @@ class ReportGenerator:
         lines.append("Second Life Region Crawler - Summary")
         lines.append("=" * 60)
         lines.append(f"Author: Isabela Evergarden")
-        lines.append(f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        lines.append(f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
         lines.append("")
         lines.append("Crawl Statistics:")
         lines.append(f"  Total Regions Discovered: {statistics.regions_discovered:,}")

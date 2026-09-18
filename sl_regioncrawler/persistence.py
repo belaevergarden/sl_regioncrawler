@@ -7,7 +7,7 @@ Author: Isabela Evergarden
 import sqlite3
 import json
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from .models import Region
 import logging
 
@@ -95,7 +95,7 @@ class RegionDatabase:
         Returns:
             Region ID
         """
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         query = """
         INSERT INTO regions (x, y, name, access, region_flags, water_height,

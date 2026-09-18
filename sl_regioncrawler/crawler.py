@@ -6,7 +6,7 @@ Author: Isabela Evergarden
 
 import time
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from .models import Region, SearchCriteria, CrawlStatistics
 from .protocol import MapBlockClient, scan_grid
 from .filtering import RegionFilter, deduplicate_regions
@@ -62,7 +62,7 @@ class RegionCrawler:
         logger.info("Starting region crawl")
         
         # Record start time
-        self.statistics.start_time = datetime.utcnow().isoformat()
+        self.statistics.start_time = datetime.now(timezone.utc).isoformat()
         start_timestamp = time.time()
         
         # Discover regions
@@ -121,7 +121,7 @@ class RegionCrawler:
         ranked_regions = self.filter.rank_regions(matching_regions)
         
         # Record end time
-        self.statistics.end_time = datetime.utcnow().isoformat()
+        self.statistics.end_time = datetime.now(timezone.utc).isoformat()
         self.statistics.duration_seconds = time.time() - start_timestamp
         
         logger.info(f"Crawl complete in {self.statistics.duration_seconds:.2f}s")
