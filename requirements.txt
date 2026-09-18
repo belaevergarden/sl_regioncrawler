@@ -1,0 +1,22 @@
+# Second Life Region Crawler Dependencies
+# Author: Isabela Evergarden
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# Code quality
+black==23.12.1
+flake8==7.0.0
+mypy==1.8.0
+
+# No external dependencies required for core functionality
+# The crawler uses only Python standard library:
+# - socket (UDP communication)
+# - sqlite3 (database)
+# - json (serialization)
+# - dataclasses (models)
+# - typing (type hints)
+# - argparse (CLI)
+# - logging (logging)

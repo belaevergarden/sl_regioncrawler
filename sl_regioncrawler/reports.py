@@ -1,0 +1,289 @@
+"""
+Report generation for Second Life region crawler.
+
+Author: Isabela Evergarden
+"""
+
+import json
+from typing import List, Dict, Any
+from datetime import datetime
+from .models import Region, CrawlStatistics
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class ReportGenerator:
+    """Generate reports in various formats."""
+
+    def __init__(self, output_dir: str = "output"):
+        """
+        Initialize report generator.
+        
+        Args:
+            output_dir: Directory for output files
+        """
+        self.output_dir = output_dir
+
+    def generate_markdown_report(
+        self,
+        regions: List[Region],
+        statistics: CrawlStatistics,
+        filename: str = "top_100_regions.md",
+        limit: int = 100
+    ) -> str:
+        """
+        Generate Markdown report of top regions.
+        
+        Args:
+            regions: List of regions (should be pre-ranked)
+            statistics: Crawl statistics
+            filename: Output filename
+            limit: Maximum number of regions to include
+            
+        Returns:
+            Path to generated report
+        """
+        import os
+        
+        filepath = os.path.join(self.output_dir, filename)
+        top_regions = regions[:limit]
+        
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(self._build_markdown_content(top_regions, statistics, limit))
+        
+        logger.info(f"Markdown report generated: {filepath}")
+        return filepath
+
+    def _build_markdown_content(
+        self,
+        regions: List[Region],
+        statistics: CrawlStatistics,
+        limit: int
+    ) -> str:
+        """Build Markdown report content."""
+        
+        lines = []
+        lines.append("# Second Life Region Crawler - Top Regions Report\n")
+        lines.append(f"**Author:** Isabela Evergarden\n")
+        lines.append(f"**Generated:** {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n")
+        lines.append("---\n")
+        
+        # Statistics
+        lines.append("## Crawl Statistics\n")
+        lines.append(f"- **Total Regions Discovered:** {statistics.regions_discovered:,}\n")
+        lines.append(f"- **Regions Matching Criteria:** {statistics.regions_matching:,}\n")
+        lines.append(f"- **Total Requests:** {statistics.total_requests}\n")
+        lines.append(f"- **Successful Requests:** {statistics.successful_requests}\n")
+        lines.append(f"- **Failed Requests:** {statistics.failed_requests}\n")
+        lines.append(f"- **Duration:** {statistics.duration_seconds:.2f} seconds\n")
+        lines.append(f"- **Start Time:** {statistics.start_time}\n")
+        lines.append(f"- **End Time:** {statistics.end_time}\n")
+        lines.append("\n---\n")
+        
+        # Ranking criteria
+        lines.append("## Ranking Criteria\n")
+        lines.append("Regions are ranked by suitability score based on:\n")
+        lines.append("- **Public Access** (+100 points): Region allows public entry\n")
+        lines.append("- **Sandbox** (+50 points): Region allows object rezzing\n")
+        lines.append("- **Script Support** (+30 points): Region allows script execution\n")
+        lines.append("- **Activity** (+10 points per agent): Number of avatars present\n")
+        lines.append("- **General Rating** (+20 points): General/PG content rating\n")
+        lines.append("- **Moderate Rating** (+10 points): Moderate/Mature content rating\n")
+        lines.append("\n---\n")
+        
+        # Top regions
+        lines.append(f"## Top {min(limit, len(regions))} Regions\n")
+        
+        if not regions:
+            lines.append("*No regions found matching criteria.*\n")
+        else:
+            for i, region in enumerate(regions, 1):
+                lines.append(f"### {i}. {region.name}\n")
+                lines.append(f"- **Location:** ({region.x}, {region.y})\n")
+                lines.append(f"- **Maturity:** {region.access}\n")
+                lines.append(f"- **Public Access:** {'Yes' if region.is_public() else 'No'}\n")
+                lines.append(f"- **Sandbox:** {'Yes' if region.is_sandbox() else 'No'}\n")
+                lines.append(f"- **Scripts Allowed:** {'Yes' if region.allows_scripts() else 'No'}\n")
+                lines.append(f"- **Current Agents:** {region.agents}\n")
+                lines.append(f"- **Water Height:** {region.water_height}m\n")
+                
+                # Show some interesting flags
+                flags = region.get_flags()
+                interesting_flags = [f for f in flags if f in [
+                    'ALLOW_VOICE', 'NO_FLY', 'ALLOW_DIRECT_TELEPORT',
+                    'BLOCK_TERRAFORM', 'TAX_FREE'
+                ]]
+                if interesting_flags:
+                    lines.append(f"- **Special Features:** {', '.join(interesting_flags)}\n")
+                
+                lines.append("\n")
+        
+        lines.append("---\n")
+        lines.append("\n*Report generated by Second Life Region Crawler*\n")
+        lines.append("*https://github.com/belaevergarden/sl_regioncrawler*\n")
+        
+        return ''.join(lines)
+
+    def generate_json_report(
+        self,
+        regions: List[Region],
+        statistics: CrawlStatistics,
+        filename: str = "regions_report.json"
+    ) -> str:
+        """
+        Generate JSON report.
+        
+        Args:
+            regions: List of regions
+            statistics: Crawl statistics
+            filename: Output filename
+            
+        Returns:
+            Path to generated report
+        """
+        import os
+        
+        filepath = os.path.join(self.output_dir, filename)
+        
+        report_data = {
+            'generated_at': datetime.utcnow().isoformat(),
+            'author': 'Isabela Evergarden',
+            'statistics': statistics.to_dict(),
+            'regions': [r.to_dict() for r in regions]
+        }
+        
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(report_data, f, indent=2, ensure_ascii=False)
+        
+        logger.info(f"JSON report generated: {filepath}")
+        return filepath
+
+    def generate_csv_report(
+        self,
+        regions: List[Region],
+        filename: str = "regions.csv"
+    ) -> str:
+        """
+        Generate CSV report.
+        
+        Args:
+            regions: List of regions
+            filename: Output filename
+            
+        Returns:
+            Path to generated report
+        """
+        import os
+        import csv
+        
+        filepath = os.path.join(self.output_dir, filename)
+        
+        with open(filepath, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            
+            # Header
+            writer.writerow([
+                'Name', 'X', 'Y', 'Access', 'Public', 'Sandbox',
+                'Scripts', 'Agents', 'Water Height', 'Flags'
+            ])
+            
+            # Data rows
+            for region in regions:
+                writer.writerow([
+                    region.name,
+                    region.x,
+                    region.y,
+                    str(region.access),
+                    'Yes' if region.is_public() else 'No',
+                    'Yes' if region.is_sandbox() else 'No',
+                    'Yes' if region.allows_scripts() else 'No',
+                    region.agents,
+                    region.water_height,
+                    f"0x{region.region_flags:08X}"
+                ])
+        
+        logger.info(f"CSV report generated: {filepath}")
+        return filepath
+
+    def generate_summary(
+        self,
+        regions: List[Region],
+        statistics: CrawlStatistics
+    ) -> str:
+        """
+        Generate text summary.
+        
+        Args:
+            regions: List of regions
+            statistics: Crawl statistics
+            
+        Returns:
+            Summary text
+        """
+        lines = []
+        lines.append("=" * 60)
+        lines.append("Second Life Region Crawler - Summary")
+        lines.append("=" * 60)
+        lines.append(f"Author: Isabela Evergarden")
+        lines.append(f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        lines.append("")
+        lines.append("Crawl Statistics:")
+        lines.append(f"  Total Regions Discovered: {statistics.regions_discovered:,}")
+        lines.append(f"  Regions Matching Criteria: {statistics.regions_matching:,}")
+        lines.append(f"  Success Rate: {statistics.successful_requests}/{statistics.total_requests}")
+        lines.append(f"  Duration: {statistics.duration_seconds:.2f}s")
+        lines.append("")
+        
+        if regions:
+            lines.append("Top 10 Regions:")
+            for i, region in enumerate(regions[:10], 1):
+                lines.append(f"  {i}. {region.name} ({region.x}, {region.y})")
+                lines.append(f"     Access: {region.access}, Agents: {region.agents}")
+        
+        lines.append("=" * 60)
+        
+        return '\n'.join(lines)
+
+
+def print_summary(
+    regions: List[Region],
+    statistics: CrawlStatistics
+):
+    """
+    Print summary to console.
+    
+    Args:
+        regions: List of regions
+        statistics: Crawl statistics
+    """
+    generator = ReportGenerator()
+    summary = generator.generate_summary(regions, statistics)
+    print(summary)
+
+
+def export_all_formats(
+    regions: List[Region],
+    statistics: CrawlStatistics,
+    output_dir: str = "output"
+) -> Dict[str, str]:
+    """
+    Export reports in all available formats.
+    
+    Args:
+        regions: List of regions
+        statistics: Crawl statistics
+        output_dir: Output directory
+        
+    Returns:
+        Dictionary mapping format to filepath
+    """
+    generator = ReportGenerator(output_dir)
+    
+    reports = {}
+    reports['markdown'] = generator.generate_markdown_report(regions, statistics)
+    reports['json'] = generator.generate_json_report(regions, statistics)
+    reports['csv'] = generator.generate_csv_report(regions)
+    
+    logger.info(f"Generated {len(reports)} report formats")
+    return reports
